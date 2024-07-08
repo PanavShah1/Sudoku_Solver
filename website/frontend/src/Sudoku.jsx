@@ -11,18 +11,31 @@ const Sudoku = () => {
         setSudoku(sudokuMatrix)
         let cells = []
         for (let i = 0; i < 9; i++) {
+            cells.push([])
             for (let j = 0; j < 9; j++) {
-                cells.push(<SudokuCell row={i} col={j} />)
+                cells[i].push(<SudokuCell key={10*i+j} row={i} col={j} />)
             }
         }
 
         setDisplaySudoku(cells)
     }, [sudokuMatrix])
 
+    React.useEffect(() => {
+        console.log("sudoku", sudoku)
+        console.log(displaySudoku)
+    }, [displaySudoku])
+
     return (
         <div>
-            {sudoku}
-            {/* {displaySudoku} */}
+            {displaySudoku && displaySudoku.map((row, rowIndex) => (
+                <div key={rowIndex} className="sudoku-row">
+                    {row.map((cell, colIndex) => (
+                        <React.Fragment key={colIndex}>
+                            {cell}
+                        </React.Fragment>
+                    ))}
+                </div>
+            ))}
         </div>
     )
 }
