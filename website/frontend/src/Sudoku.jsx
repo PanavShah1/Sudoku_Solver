@@ -1,43 +1,37 @@
-import React from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Context from "./Context";
 import SudokuCell from "./SudokuCell";
 
 const Sudoku = () => {
-    const {sudokuMatrix, setSudokuMatrix} = React.useContext(Context)
-    const [sudoku, setSudoku] = React.useState(null)
-    const [displaySudoku, setDisplaySudoku] = React.useState(null)
+    const { sudokuMatrix } = useContext(Context);
+    const [displaySudoku, setDisplaySudoku] = useState([]);
 
-    React.useEffect(() => {
-        setSudoku(sudokuMatrix)
-        let cells = []
-        for (let i = 0; i < 9; i++) {
-            cells.push([])
-            for (let j = 0; j < 9; j++) {
-                cells[i].push(<SudokuCell key={10*i+j} row={i} col={j} />)
-            }
+    useEffect(() => {
+        if (sudokuMatrix) {
+            const cells = sudokuMatrix.sudoku_matrix.map((row, rowIndex) =>
+                row.map((value, colIndex) => (
+                    <SudokuCell
+                        key={10 * rowIndex + colIndex}
+                        row={rowIndex}
+                        col={colIndex}
+                        value={value}
+                    />
+                ))
+            );
+            setDisplaySudoku(cells);
         }
-
-        setDisplaySudoku(cells)
-    }, [sudokuMatrix])
-
-    React.useEffect(() => {
-        console.log("sudoku", sudoku)
-        console.log(displaySudoku)
-    }, [displaySudoku])
+    }, [sudokuMatrix]);
 
     return (
         <div>
-            {displaySudoku && displaySudoku.map((row, rowIndex) => (
-                <div key={rowIndex} className="sudoku-row">
-                    {row.map((cell, colIndex) => (
-                        <React.Fragment key={colIndex}>
-                            {cell}
-                        </React.Fragment>
-                    ))}
-                </div>
-            ))}
+            {displaySudoku.length > 0 &&
+                displaySudoku.map((row, rowIndex) => (
+                    <div key={rowIndex} className="sudoku-row">
+                        {row}
+                    </div>
+                ))}
         </div>
-    )
-}
+    );
+};
 
-export default Sudoku
+export default Sudoku;

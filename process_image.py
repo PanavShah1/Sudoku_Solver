@@ -4,23 +4,10 @@ import numpy as np
 from paths import program_cell_dir, sudoku_dir, image_dir
 import matplotlib.pyplot as plt
 
-image_dir = "/Users/panavshah/Desktop/Desktop - Panav’s MacBook Pro/coding_stuff/projects/sudoku_image_solver/website/uploads/sudoku_input.jpeg"
+image_dir = "/Users/panavshah/Desktop/Desktop - Panav’s MacBook Pro/coding_stuff/projects/sudoku_image_solver/website/uploads/sudoku_input.png"
 
-print(image_dir)
-# plt.imshow(cv2.imread(image_dir))
-# plt.show()
-try:
-    with open(image_dir, 'rb') as f:
-        image_data = f.read()
-        print(image_data)
-    print("File read successfully.")
-except Exception as e:
-    print(f"Error reading file: {e}")
-
-print(os.path.exists(image_dir))
 image = cv2.imread(image_dir, cv2.IMREAD_GRAYSCALE)
-print(image.shape)
-print(image)
+
 def preprocess(image):
     blur = cv2.GaussianBlur(image, (3,3),6) 
     thresh = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 199, 5)
