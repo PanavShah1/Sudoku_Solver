@@ -6,7 +6,7 @@
 
 <h2>Running the Program</h2>
 <ul>
-  <li>Clone this repository</li>
+  <li>Clone this repository <code>git clone https://github.com/PanavShah1/Sudoku_Solver</code></li>
   <li>Go to the website directory <code>cd website</code></li>
   <li>Run the backend server <code>uvicorn api:app --reload</code></li>
   <li>Go to the frontend directory <code>cd frontend</code></li>
