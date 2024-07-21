@@ -1,6 +1,9 @@
 <h1>Sudoku Solver</h1>
 <p>Simply upload an image of a Sudoku—whether it's from a book, a website, or any other source—and watch as it's automatically solved and displayed.</p>
 
+<img width="1354" alt="image" src="https://github.com/user-attachments/assets/614fd6f0-b45c-454a-9418-3cee2d3af4be">
+
+
 <h2>Running the Program</h2>
 <ul>
   <li>Clone this repository</li>
