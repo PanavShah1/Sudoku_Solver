@@ -11,10 +11,13 @@ const Sudoku = () => {
             const cells = sudokuMatrix.sudoku_matrix.map((row, rowIndex) =>
                 row.map((value, colIndex) => (
                     <SudokuCell
-                        key={10 * rowIndex + colIndex}
+                        key={rowIndex * 9 + colIndex} // Ensure unique key
                         row={rowIndex}
                         col={colIndex}
-                        value={value}
+                        value={value} // Pass value directly
+                        prob={sudokuMatrix.prob_matrix[rowIndex][colIndex]} // Pass probability directly
+                        isThickBottom={rowIndex === 2 || rowIndex === 5}
+                        isThickRight={colIndex === 2 || colIndex === 5}
                     />
                 ))
             );
@@ -23,13 +26,15 @@ const Sudoku = () => {
     }, [sudokuMatrix]);
 
     return (
-        <div>
-            {displaySudoku.length > 0 &&
-                displaySudoku.map((row, rowIndex) => (
-                    <div key={rowIndex} className="sudoku-row">
-                        {row}
-                    </div>
-                ))}
+        <div className="main">
+            <div className="sudoku-container">
+                {displaySudoku.length > 0 &&
+                    displaySudoku.map((row, rowIndex) => (
+                        <div key={rowIndex} className="sudoku-row">
+                            {row}
+                        </div>
+                    ))}
+            </div>
         </div>
     );
 };

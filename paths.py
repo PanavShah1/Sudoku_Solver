@@ -4,5 +4,6 @@ homepath = "/Users/panavshah/Desktop/Desktop - Panav’s MacBook Pro/coding_stuf
 program_dir = os.path.join(homepath, 'program_images')
 program_cell_dir = os.path.join(program_dir, 'cell_images/')
 MNIST_dir = os.path.join(homepath, 'MNIST')
+Number_dir = os.path.join(homepath, 'Numbers')
 sudoku_dir = os.path.join(program_dir, 'sudoku.png')
 image_dir = os.path.join(homepath, 'website/uploads/sudoku_input.png')

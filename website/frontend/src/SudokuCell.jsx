@@ -1,55 +1,52 @@
-import React, { useContext, useState } from "react";
-import Context from "./Context";
+import React, { useState, useContext } from "react";
+import Context from "./Context"; // Ensure you have the correct path to your Context file
 
-const SudokuCell = ({ row, col }) => {
+const SudokuCell = ({ row, col, value, prob, isThickBottom, isThickRight }) => {
     const { sudokuMatrix, setSudokuMatrix } = useContext(Context);
-    const [edit, setEdit] = useState(false);
-    const [newValue, setNewValue] = useState("");
+    const [cellValue, setCellValue] = useState(value);
 
-    // const handleClick = () => {
-    //     setEdit(!edit);
-    //     setNewValue(sudokuMatrix["sudoku_matrix"][row][col]);
-
-    // }
-
-    const handleChange = (event) => {
-        setNewValue(event.target.value);
-        const updatedMatrix = sudokuMatrix
-    
-        // Update the specific cell value
-        updatedMatrix.sudoku_matrix[row][col] = parseInt(newValue);
-    
-        // Update the state with the new matrix
-        setSudokuMatrix(updatedMatrix);
+    // Color coding based on probability
+    let color_prob = "";
+    if (prob === 0 || prob > 0.99) {
+        color_prob = "green";
+    } else if (prob > 0.9) {
+        color_prob = "blue";
+    } else if (prob > 0.7) {
+        color_prob = "orange";
+    } else {
+        color_prob = "red";
     }
-    
-    
 
-    React.useEffect(() => {
-        
+    // Handle changes in the cell value
+    const handleChange = (event) => {
+        const newValue = event.target.value;
 
-        console.log("printing values")
-        console.log(sudokuMatrix["sudoku_matrix"]);
-        console.log(Object.keys(sudokuMatrix));
-        console.log("edit", edit)
-        console.log("newValue", newValue)
-        
-    }, [newValue]);
+        // Update local cell value state
+        setCellValue(newValue);
+
+        // Update sudokuMatrix in context
+        setSudokuMatrix(prevMatrix => {
+            const newMatrix = [...prevMatrix.sudoku_matrix];
+            newMatrix[row][col] = parseInt(newValue) || 0; // Ensure value is a number
+            return { ...prevMatrix, sudoku_matrix: newMatrix };
+        });
+    };
 
     return (
-        <div className="sudoku-cell">
-
+        <div
+            className={`sudoku-cell ${isThickBottom ? "thick-bottom-border" : ""} ${isThickRight ? "thick-right-border" : ""}`}
+        >
             <textarea
                 className="sudoku-input"
-                value={newValue}
-                onChange={handleChange}
-                placeholder={sudokuMatrix["sudoku_matrix"][row][col]}
+                value={cellValue}
+                onChange={handleChange} // Update value on change
+                placeholder={value}
+                rows={1}
+                cols={1}
             />
-            {/* <h2>{sudokuMatrix["sudoku_matrix"][row][col]}</h2> */}
-            <p>{Math.round(sudokuMatrix["prob_matrix"][row][col]*1000)/10}</p>
-            {/* <button onClick={handleClick}>Edit</button> */}
-
-            
+            <p className="sudoku-prob" style={{ color: color_prob }}>
+                {Math.round(prob * 1000) / 10}
+            </p>
         </div>
     );
 };

@@ -4,7 +4,7 @@ import numpy as np
 from paths import program_cell_dir, sudoku_dir, image_dir
 import matplotlib.pyplot as plt
 
-image_dir = "/Users/panavshah/Desktop/Desktop - Panav’s MacBook Pro/coding_stuff/projects/sudoku_image_solver/website/uploads/sudoku_input.png"
+# image_dir = "/Users/panavshah/Desktop/Desktop - Panav’s MacBook Pro/coding_stuff/projects/sudoku_image_solver/images/sudoku_6.png"
 
 image = cv2.imread(image_dir, cv2.IMREAD_GRAYSCALE)
 
@@ -20,13 +20,7 @@ contours, heirarchy = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPRO
 
 largest_contour = max(contours, key=cv2.contourArea)
 
-epsilon = 0.02 * cv2.arcLength(largest_contour, True)
-approx = cv2.approxPolyDP(largest_contour, epsilon, True)
-
-if len(approx) == 4:
-    box = approx.reshape(4, 2)
-else:
-    raise ValueError("The largest contour does not have four corners.")
+print(image.shape, largest_contour.shape)
 
 
 # top-left, top-right, bottom-right, bottom-left
@@ -40,17 +34,46 @@ def order_points(pts):
     rect[3] = pts[np.argmax(diff)]
     return rect
 
-ordered_box = order_points(box)
 
-dst = np.float32([[0, 0], [900, 0], [900, 900], [0, 900]])
-matrix = cv2.getPerspectiveTransform(ordered_box, dst)
-result = cv2.warpPerspective(image, matrix, (900, 900))
-# result = preprocess(result)
-cv2.imwrite(sudoku_dir, result)
+
+if largest_contour.shape[0] < image.shape[0] or largest_contour.shape[0] < image.shape[1]:
+    print("The largest contour is smaller than the image.")
+    cv2.imwrite(sudoku_dir, cv2.resize(image, (900, 900), interpolation = cv2.INTER_LINEAR))
+
+else:
+    epsilon = 0.02 * cv2.arcLength(largest_contour, True)
+    approx = cv2.approxPolyDP(largest_contour, epsilon, True)
+
+    try:
+        if len(approx) == 4:
+            box = approx.reshape(4, 2)
+        else:
+            raise("The largest contour does not have four corners.")
+        ordered_box = order_points(box)
+
+        dst = np.float32([[0, 0], [900, 0], [900, 900], [0, 900]])
+        matrix = cv2.getPerspectiveTransform(ordered_box, dst)
+        result = cv2.warpPerspective(image, matrix, (900, 900))
+        # result = preprocess(result)
+        cv2.imwrite(sudoku_dir, result)
+    except:
+        cv2.imwrite(sudoku_dir, cv2.resize(image, (900, 900), interpolation = cv2.INTER_LINEAR))
+
+
+
+
+
+
+
+
+
+
+saved_sudoku_image = cv2.imread(sudoku_dir)
+print(saved_sudoku_image.shape)
 
 for i in range(9):
     for j in range(9):
-        cell = result[i*100:(i+1)*100, j*100:(j+1)*100]
+        cell = saved_sudoku_image[i*100:(i+1)*100, j*100:(j+1)*100]
         cv2.imwrite(f'{program_cell_dir}cell_{i}{j}.png', cell)
 
 

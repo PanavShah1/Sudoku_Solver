@@ -1,18 +1,15 @@
-import React from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Context from "./Context";
-import Sudoku from "./Sudoku";
 
 const ImageInput = () => {
-    const [image, setImage] = React.useState(null);
-    const [file, setFile] = React.useState(null);
-    const { sudokuMatrix, setSudokuMatrix } = React.useContext(Context);
+    const [image, setImage] = useState(null);
+    const [file, setFile] = useState(null);
+    const { sudokuMatrix, setSudokuMatrix } = useContext(Context);
 
     function handleChangeImage(event) {
         const file = event.target.files[0];
         if (file) {
             const imageURL = URL.createObjectURL(file);
-            console.log(imageURL);
-            console.log(file);
             setImage(imageURL);
             setFile(file);
         }
@@ -20,7 +17,6 @@ const ImageInput = () => {
 
     async function handleUpload() {
         if (file) {
-            console.log(image);
             const formData = new FormData();
             formData.append("file", file);
 
@@ -36,29 +32,42 @@ const ImageInput = () => {
 
                 const result = await response.json();
                 setSudokuMatrix(JSON.parse(JSON.parse(result)));
-
-                console.log("result", JSON.parse(result));
             } catch (error) {
                 console.error("Error uploading image:", error);
             }
         }
     }
 
-    React.useEffect(() => {
-        console.log("printing values")
-        console.log(sudokuMatrix['0']); 
-        console.log(sudokuMatrix["sudoku_matrix"]);
-        console.log(Object.keys(sudokuMatrix));
-    }, [sudokuMatrix]);
+    useEffect(() => {
+        const handlePaste = (event) => {
+            const items = event.clipboardData.items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf("image") !== -1) {
+                    const blob = items[i].getAsFile();
+                    const imageURL = URL.createObjectURL(blob);
+                    setImage(imageURL);
+                    setFile(blob);
+                    break;
+                }
+            }
+        };
 
-
+        window.addEventListener("paste", handlePaste);
+        return () => {
+            window.removeEventListener("paste", handlePaste);
+        };
+    }, []);
 
     return (
-        <div>
-            <input type="file" accept="image/*" onChange={handleChangeImage} />
-            <br></br>
-            {image && <img className="sudoku-input-image" src={image} alt="Preview" />}
-            <button onClick={handleUpload}>Upload Image</button>
+        <div className="main">
+            <br />
+            <div className="image-cont">
+                <div className="upload-img-cont">
+                    {image && <img className="sudoku-input-image" src={image} alt="Preview" />}
+                    <input className="upload-img" type="file" accept="image/*" onChange={handleChangeImage} />
+                </div>
+            </div>
+            {file && <button className="upload-img-button" onClick={handleUpload}>Upload Image</button>}
         </div>
     );
 };

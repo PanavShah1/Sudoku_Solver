@@ -3,6 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from run_program import run_program
 import json
+from sudoku import Sudoku
+from pydantic import BaseModel
+from typing import List
+
+
 
 app = FastAPI()
 
@@ -34,6 +39,20 @@ async def upload_image(file: UploadFile = File(...)):
         sudoku_matrix = f.read()
     return json.dumps(sudoku_matrix)
 
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+class SudokuBoard(BaseModel):
+    sudoku_board: List[List[int]]
+
+@app.post("/solve-sudoku/")
+async def solve_sudoku(sudoku_board: SudokuBoard):
+    board = sudoku_board.sudoku_board
+    print("Received board:", board)
+    sudoku = Sudoku(3, 3, board=board)
+    solution = sudoku.solve()
+    print("Solved board:", solution.board)
+    solution_board = solution.board
+    solved = True
+    if solution_board == [[None for i in range(9)] for j in range(9)]:
+        print("no solution")
+        solved = False
+    return {"solved": solved, "solution": solution.board}

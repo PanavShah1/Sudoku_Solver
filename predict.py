@@ -6,7 +6,7 @@ import torchvision.transforms as transforms
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from paths import program_cell_dir, MNIST_dir
+from paths import program_cell_dir, MNIST_dir, Number_dir
 
 
 def remove_border(cell_num):
@@ -84,7 +84,10 @@ def predict_number(cell_num):
     img = remove_border(cell_num)
 
 
-    img = 255 - img
+    thresh = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 199, 5)
+
+
+    img = thresh
     # img = img * 1.5  # Adjust the factor as needed
     print("max : ", np.max(img))
 
@@ -100,7 +103,7 @@ def predict_number(cell_num):
 
     model_pred = MNISTModelV0(input_shape=1, hidden_layers=10, output_shape=10)
 
-    model_pred.load_state_dict(torch.load(os.path.join(MNIST_dir, 'model_0.pth')))
+    model_pred.load_state_dict(torch.load(os.path.join(Number_dir, 'model_3.pth')))
 
     img = img.unsqueeze(0)
     model_pred.eval()
@@ -115,6 +118,6 @@ def predict_number(cell_num):
     
     return pred_class, pred_prob[0][int(pred_class)]
 
-
-print(check_empty("40"))
-print(predict_number("40"))
+if __name__ == "__main__":
+    print(check_empty("78"))
+    print(predict_number("78"))
